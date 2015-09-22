@@ -1,6 +1,5 @@
-python-bareos (0.3.0-1) unstable; urgency=low
+bareos-fuse (0.1.0-1) unstable; urgency=low
 
   * initial
 
- -- Joerg Steffens <joerg.steffens@bareos.com>  Mon, 24 Aug 2015 11:45:40 +0200
-
+ -- Joerg Steffens <joerg.steffens@bareos.com>  Tue, 22 Sep 2015 11:45:40 +0200
