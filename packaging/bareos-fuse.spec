@@ -25,7 +25,7 @@ bareos-fuse allows you to display the information of a Bareos Backup System in y
 
 %install
 mkdir -p %{buildroot}/bin %{buildroot}/etc  %{buildroot}/usr
-rsync -av bin/. %{buildroot}/etc/.
+rsync -av bin/. %{buildroot}/bin/.
 rsync -av etc/. %{buildroot}/etc/.
 rsync -av usr/. %{buildroot}/usr/.
 
