@@ -1,7 +1,7 @@
 Name:           bareos-fuse
 Version:        0.1
 Release:        1%{?dist}
-Summary:        Display Bareos information as filesystem
+Summary:        Backup Archiving REcovery Open Sourced - FUSE
 Group:          Productivity/Archiving/Backup
 License:        AGPL-3.0
 URL:            https://github.com/joergsteffens/bareos-fuse/
@@ -14,6 +14,8 @@ Requires:       python-fuse
 Requires:       python-bareos
 
 %description
+Bareos - Backup Archiving Recovery Open Sourced - FUSE
+
 bareos-fuse allows you to display the information of a Bareos Backup System in your filesystem.
 
 %prep

@@ -8,4 +8,5 @@ Standards-Version: 3.9.1
 Package: bareos-fuse
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}, python-bareos, python-fuse
-Description: bareos-fuse allows you to display the information of a Bareos Backup System in your filesystem.
+Description: Backup Archiving Recovery Open Sourced - FUSE
+ bareos-fuse (bareosfs) allows you to display the information of a Bareos Backup System in your filesystem.
