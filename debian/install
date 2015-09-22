@@ -1,3 +1,3 @@
 /bin/*
 /etc/bareos/bareos-dir.d/*
-/usr/bin/bareos-fuse.py
+/sbin/*
