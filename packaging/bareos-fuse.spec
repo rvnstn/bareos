@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        Backup Archiving REcovery Open Sourced - FUSE
 Group:          Productivity/Archiving/Backup
 License:        AGPL-3.0
-URL:            https://github.com/joergsteffens/bareos-fuse/
+URL:            https://github.com/bareos/bareos-fuse/
 Vendor:         The Bareos Team
 Source:         %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-root
