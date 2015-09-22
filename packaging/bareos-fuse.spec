@@ -10,6 +10,8 @@ Source:         %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-root
 BuildArch:      noarch
 BuildRequires:  rsync
+# for directory /etc/bareos/bareos-dir.d/
+BuildRequires:  bareos-common
 Requires:       python-fuse
 Requires:       python-bareos
 
