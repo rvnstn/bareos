@@ -5,6 +5,7 @@ Virtual Filesystem Showing Bareos Information
 * uses https://github.com/bareos/python-bareos
 * prebuild packages available at http://download.bareos.org/bareos/contrib/
 * status: usable Proof of Concept
+* requires Bareos >= 15.2
 
 ## Usage
 
