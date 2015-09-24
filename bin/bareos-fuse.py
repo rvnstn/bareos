@@ -42,7 +42,17 @@ if __name__ == '__main__':
         mountopt="password",
         metavar="PASSWORD",
         default='',
-        help="password to authenticate at Bareos Director [default: \"%default\"]")
+        help="password to authenticate at Bareos Director")
+    fs.parser.add_option(
+        mountopt="restoreclient",
+        metavar="client",
+        default='',
+        help="Bareos client used to restore files")
+    fs.parser.add_option(
+        mountopt="restorepath",
+        metavar="PATH",
+        default='/var/cache/bareosfs/',
+        help="path prefix to restore files [default: \"%default\"]")
     fs.parser.add_option(
         mountopt="logfile",
         metavar="FILENAME",

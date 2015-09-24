@@ -28,7 +28,10 @@ Options:
                            ""]
     -o name=NAME           name of the Bareos Named Console
     -o password=PASSWORD   password to authenticate at Bareos Director
-                           [default: ""]
+    -o restoreclient=client
+                           Bareos client used to restore files
+    -o restorepath=PATH    path prefix to restore files [default:
+                           "/var/cache/bareosfs/"]
     -o logfile=FILENAME    if given, log to FILENAME
 ```
 
@@ -80,10 +83,39 @@ drwxr-xr-x  5 root root       4096 Jan  1  1970 Full-0010
 ## show content (files/directories) off a backup
 
 ```
-ls -la /mnt/clients/paeffgen-fd/backups/jobid\=887_level\=F_status\=T/data/
+ls -la /mnt/clients/client1-fd/backups/jobid\=887_level\=F_status\=T/data/
 ...
 ```
 
-# TODO:
+## restore files from a backup job
 
-* implement restore
+Triggering restore is implemented using Extended Attributes.
+This prevents, that a normal read access triggers a restore job.
+To trigger a restore, set the extended attribute `user.bareos.do` of a file or directory  to `restore`.
+
+Note: the mount parameter `restoreclient` is required for this operation.
+Otherwise you get a EPERM error.
+
+Example for restoring all files of a full backup job:
+
+```
+# cd /mnt/clients/client1-fd/backups/jobid\=887_level\=F_status\=T/data/
+# getfattr -d .
+user.bareos.do
+user.bareos.do_options="mark | restore"
+user.bareos.restored="no"
+user.bareos.restorepath="/var/cache/bareosfs//jobid=887"
+setfattr -n user.bareos.do -v restore .
+# setfattr -n user.bareos.do -v restore .
+# getfattr -d .
+user.bareos.do="restore"
+user.bareos.do_options="mark | restore"
+user.bareos.restore_job_id="913"
+user.bareos.restored="yes"
+user.bareos.restorepath="//var/cache/bareosfs//jobid=887"
+```
+
+Files are now readable and links show there destination.
+
+Instead of restoring all files and directories from the backup, you can set the "restore" value on individual files.
+Each set will trigger a seperate restore job.
