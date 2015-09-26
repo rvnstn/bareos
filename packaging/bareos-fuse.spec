@@ -12,6 +12,8 @@ BuildArch:      noarch
 BuildRequires:  rsync
 # for directory /etc/bareos/bareos-dir.d/
 BuildRequires:  bareos-common
+# fusermount
+Requires:       fuse
 Requires:       python-fuse
 Requires:       python-bareos
 
