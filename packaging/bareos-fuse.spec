@@ -12,6 +12,9 @@ BuildArch:      noarch
 BuildRequires:  rsync
 # for directory /etc/bareos/bareos-dir.d/
 BuildRequires:  bareos-common
+# required for restoring.
+# Recommends would be enough, but nor supported by all distributions.
+Requires:       bareos-filedaemon >= 15.2.1
 # fusermount
 Requires:       fuse
 Requires:       python-fuse
