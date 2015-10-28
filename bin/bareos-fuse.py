@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
+# -*- coding: utf-8 -*-
+
 import bareos.fuse
 import fuse
 import logging
 import sys
-
-LOG_FILENAME        = '/tmp/bareos-fuse-bsock.log'
 
 if __name__ == '__main__':
     usage = """
