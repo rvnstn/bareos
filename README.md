@@ -93,8 +93,9 @@ Triggering restore is implemented using Extended Attributes.
 This prevents, that a normal read access triggers a restore job.
 To trigger a restore, set the extended attribute `user.bareos.do` of a file or directory  to `restore`.
 
-Note: the mount parameter `restoreclient` is required for this operation.
-Otherwise you get a EPERM error.
+Note:
+  * the mount parameter `restoreclient` is required for this operation. Otherwise you get a EPERM error.
+  * the mount parameter `restorejob` is required, if you have more then one restore job defined.
 
 Example for restoring all files of a full backup job:
 
@@ -105,7 +106,6 @@ user.bareos.do
 user.bareos.do_options="mark | restore"
 user.bareos.restored="no"
 user.bareos.restorepath="/var/cache/bareosfs//jobid=887"
-setfattr -n user.bareos.do -v restore .
 # setfattr -n user.bareos.do -v restore .
 # getfattr -d .
 user.bareos.do="restore"

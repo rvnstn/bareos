@@ -50,6 +50,11 @@ if __name__ == '__main__':
         default='',
         help="Bareos client used to restore files")
     fs.parser.add_option(
+        mountopt="restorejob",
+        metavar="BAREOS_JOB_NAME",
+        default='',
+        help="Bareos job used to restore files")
+    fs.parser.add_option(
         mountopt="restorepath",
         metavar="PATH",
         default=fs.restorepath,
@@ -64,7 +69,7 @@ if __name__ == '__main__':
         fs.parse(values=fs, errex=1)
     except (bareos.fuse.exceptions.ParameterMissing,
             bareos.fuse.exceptions.RestorePathInvalid) as e:
-        print e.__module__ + "." + e.__class__.__name__+ ": " + str(e)
+        print(e.__module__ + "." + e.__class__.__name__+ ": " + str(e))
         sys.exit(1)
 
     try:
@@ -73,5 +78,5 @@ if __name__ == '__main__':
         bareos.exceptions.AuthenticationError,
         bareos.fuse.exceptions.RestoreClientUnknown,
         fuse.FuseError) as e:
-            print e.__module__ + "." + e.__class__.__name__+ ": " + str(e)
+            print(e.__module__ + "." + e.__class__.__name__+ ": " + str(e))
             sys.exit(1)
