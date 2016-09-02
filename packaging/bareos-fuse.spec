@@ -13,7 +13,7 @@ BuildRequires:  rsync
 # for directory /etc/bareos/bareos-dir.d/
 BuildRequires:  bareos-common
 # required for restoring.
-# Recommends would be enough, but nor supported by all distributions.
+# Recommends would be enough, but not supported by all distributions.
 Requires:       bareos-filedaemon >= 15.2.1
 # fusermount
 Requires:       fuse
@@ -42,7 +42,8 @@ rsync -av sbin/. %{buildroot}/sbin/.
 %files
 %defattr(-,root,root,-)
 %doc README.md
-%config(noreplace) %attr(644,root,root) /etc/bareos/bareos-dir.d/*
+%config(noreplace) %attr(644,root,root) /etc/bareos/bareos-dir.d/console/bareosfs.conf.example
+%config(noreplace) %attr(644,root,root) /etc/bareos/bareos-dir.d/profile/bareosfs-all.conf
 /bin/*
 /sbin/*
 

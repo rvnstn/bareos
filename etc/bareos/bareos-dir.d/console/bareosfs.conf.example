@@ -1,0 +1,7 @@
+Console {
+  Name = bareosfs
+  Description = "Named console to be used by bareos-fuse/bareosfs"
+  Password = "CHANGEME"
+  Profile = bareosfs-all
+}
+
