@@ -1,4 +1,4 @@
-/bin/*
+#/bin/*
 /etc/bareos/bareos-dir.d/console/*.conf.example
 /etc/bareos/bareos-dir.d/profile/*.conf
 /sbin/*
