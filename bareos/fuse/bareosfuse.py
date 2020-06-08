@@ -85,9 +85,12 @@ class BareosFuse(fuse.Fuse):
             return stat
 
     def read(self, path, size, offset):
-        result = self.bareos.read(Path(path), size, offset)
-        self.logger.debug("%s: %s" % (path, result))
-        return result
+        data = self.bareos.read(Path(path), size, offset)
+        self.logger.debug("({}, {}, {}): {}".format(path, size, offset, data))
+        # This should not happen.
+        if len(data) > size:
+            data = data[0:size-1]
+        return data
 
     def readdir(self, path, offset):
         entries = self.bareos.readdir(Path(path), offset)

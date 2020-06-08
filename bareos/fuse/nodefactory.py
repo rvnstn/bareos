@@ -15,7 +15,7 @@ class NodeFactory(object):
 
     def get_instance(self, classtype, *args, **kwargs):
         classname = classtype.__name__
-        if not self.instances.has_key(classname):
+        if not classname in self.instances:
             self.instances[classname] = {}
         id = classtype.get_id(*args, **kwargs)
         if not id:
@@ -23,7 +23,7 @@ class NodeFactory(object):
             instance = classtype(self.root, *args, **kwargs)
             #self.instances[classname][id] = instance
         else:
-            if self.instances[classname].has_key(id):
+            if id in self.instances[classname]:
                 self.logger.debug(classname + ": reusing " + id)
                 instance = self.instances[classname][id]
             else:

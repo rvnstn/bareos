@@ -20,19 +20,20 @@ class Status(File):
 
     def do_update(self):
         self.objects = 0
-        self.content  = "#\n"
-        self.content += "# bareosfs cache\n"
-        self.content += "#\n"
+        self.content  = b"#\n"
+        self.content += b"# bareosfs cache\n"
+        self.content += b"#\n"
         self.content += self.get_status(None, self.root, -1)
-        self.content += "#\n"
-        self.content += "# number objects: %i\n" % (self.objects)
-        self.content += "#\n"
-
+        self.content += b"#\n"
+        self.content += b"# number objects: %i\n" % (self.objects)
+        self.content += b"#\n"
 
     def get_status(self, name, node, indent):
-        result = ""
+        result = b""
         if name:
-            result = " " * (indent*2) + "%s\n" % (name)
+            result  = b" " * (indent*2)
+            result += self.as_bytes(name)
+            result += b"\n"
             self.objects += 1
         for i in sorted(node.subnodes.keys()):
             result += self.get_status(i, node.subnodes[i], indent+1)
