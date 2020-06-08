@@ -18,14 +18,15 @@ class JobLog(File):
     def do_update(self):
         jobid = self.job['jobid']
         data = self.bsock.call( "llist joblog jobid=%s" % (jobid) )
-        self.content = ""
+        content = ""
         for i in data['joblog']:
-            self.content += str(i['time']) + " "
+            content += str(i['time']) + " "
             try:
-                self.content += str(i['logtext'])
+                content += str(i['logtext'])
             except KeyError:
                 # some entries don't have logtext
                 pass
             except UnicodeEncodeError as e:
                 self.logger.error("failed to convert logtext to string: %s" % (str(e)))
-                self.content += "BAREOFSFS SKIPPED: converting error\n"
+                content += "BAREOFSFS SKIPPED: converting error\n"
+        self.content = bytes(bytearray(content, "utf-8"))

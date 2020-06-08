@@ -9,6 +9,7 @@ import  grp
 import  logging
 import  pwd
 import  stat
+import  sys
 
 class Base(object):
     """
@@ -22,6 +23,7 @@ class Base(object):
         self.set_name(name)
         self.stat = fuse.Stat()
         self.xattr = {}
+        # content have to be an instance of "bytes" (or None).
         self.content = None
         self.subnodes = {}
         self.subnodes_old = self.subnodes.copy()
@@ -32,6 +34,27 @@ class Base(object):
         # timeout for caching
         self.cache_timeout = timedelta(seconds=60)
         self.cache_stat_timeout = timedelta(seconds=60)
+
+
+    def as_str(self, data):
+        if sys.version_info[0] < 3:
+            # Python 2
+            if isinstance(data, unicode):
+                data = data.encode('utf-8')
+        else:
+            # Python 3
+            if isinstance(data, bytes):
+                data = data.decode('utf-8')
+        return data
+
+
+    def as_bytes(self, data):
+        if data is None:
+            return data
+        if not isinstance(data, bytes):
+            return bytes(data, "utf-8")
+        return data
+
 
     @classmethod
     def get_id(cls, *args, **kwargs):
@@ -60,16 +83,10 @@ class Base(object):
 
     def get_name(self, *args, **kwargs):
         result = self.do_get_name(*args, **kwargs)
-        if isinstance(result, unicode):
-            result = result.encode('utf-8', 'replace')
-        return result
+        return self.as_str(result)
 
     def set_name(self, name):
-        if isinstance(name, unicode):
-            self.name = name.encode('utf-8', 'replace')
-        else:
-            # should be str or NoneType
-            self.name = name
+        self.name = self.as_str(name)
 
     def set_static(self, value=True):
         self.static = value
@@ -198,7 +215,6 @@ class Base(object):
         #self.logger.debug("%s(\"%s\", %d, %d)" % (str(self), str(path), size, offset))
         result = -errno.ENOENT
         if path.len() == 0:
-            self.logger.debug( "content: " + str(self.content) )
             self.update()
             if self.content != None:
                 result = self.content[offset:offset+size]
@@ -243,9 +259,7 @@ class Base(object):
         result = None
         if path.len() == 0:
             try:
-                result = self.xattr[key]
-                if isinstance(self.xattr[key], unicode):
-                    result = self.xattr[key].encode('utf-8','replace')
+                result = self.as_str(self.xattr[key])
             except KeyError:
                 pass
         else:
