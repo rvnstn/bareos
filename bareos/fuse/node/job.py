@@ -44,13 +44,15 @@ class Job(Directory):
         return job['jobid']
 
     def do_get_name(self, job):
-        try:
-            name = "jobid={jobid}_name={name}_client={client}_level={level}_status={jobstatus}".format(**job)
-        except KeyError:
-            try:
-                name = "jobid={jobid}_name={name}_client={clientname}_level={level}_status={jobstatus}".format(**job)
-            except KeyError:
-                name = "jobid={jobid}_level={level}_status={jobstatus}".format(**job)
+        name = "jobid={jobid}_name={name}".format(**job)
+        if "client" in job:
+            name += "_client={client}".format(**job)
+        elif "clientname" in job:
+            name += "_client={clientname}".format(**job)
+        if "level" in job and job['level'].strip():
+            name += "_level={level}".format(**job)
+        if "jobstatus" in job:
+            name += "_status={jobstatus}".format(**job)
         return name
 
     def do_update_stat(self):
