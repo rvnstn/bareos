@@ -4,16 +4,22 @@ bareos-fuse (bareosfs)
 Virtual Filesystem Showing Bareos Information
 
 * uses https://github.com/bareos/python-bareos
-* prebuild packages available at http://download.bareos.org/bareos/contrib/
-* status: usable Proof of Concept
 * requires Bareos >= 15.2
+* installation:
+
+  * prebuild packages available at http://download.bareos.org/bareos/contrib/
+  * or via pip:
+
+    * ``pip install bareos-fuse``
+
+      * (Note: The required Python package ``fuse-python`` requires a FUSE development files. On Debian make sure ``libfuse-dev`` is installed.)
 
 Usage
 -----
 
 .. code:: console
 
-  # /bin/bareos-fuse.py --help
+  # bareos-fuse.py --help
 
   Bareos Fuse filesystem: displays files from Bareos backups as a (userspace) filesystem.
 
@@ -42,7 +48,7 @@ Mount bareosfs via Bareos Default Console (without console name):
 
 .. code:: console
 
-  mount -t bareosfs -o address=localhost,password=secret,logfile=/var/log/bareosfs.log fuse /mnt
+  bareos-fuse.py -o address=localhost,password=secret,logfile=/var/log/bareosfs.log /mnt
 
 
 show job list
@@ -133,3 +139,14 @@ Files are now readable and links show there destination.
 
 Instead of restoring all files and directories from the backup, you can set the "restore" value on individual files.
 Each set will trigger a separate restore job.
+
+
+Alternative: mount command
+--------------------------
+
+The ``baroes-fuse`` packages do also contain the ``mount.bareosfs`` link.
+Using this, the normal mount command can be used:
+
+.. code:: console
+
+  mount -t bareosfs -o address=localhost,password=secret,logfile=/var/log/bareosfs.log fuse /mnt
