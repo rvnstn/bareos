@@ -40,31 +40,43 @@ endif()
 # are only used inside Bareos configuration files.
 
 # set the data encryption and signature keys
-set(pki_keypair ${CMAKE_CURRENT_SOURCE_DIR}/pki/fd.pem)
-set(pki_master_key ${CMAKE_CURRENT_SOURCE_DIR}/pki/master.cert)
+set(pki_keypair ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/pki/fd.pem)
+set(pki_master_key
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/pki/master.cert
+)
 
 # set the tls ca keys
-set(tls_ca_certificate ${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-ca.pem)
+set(tls_ca_certificate
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-ca.pem
+)
 
 set(tls_fd_certificate
-    ${CMAKE_CURRENT_SOURCE_DIR}/tls/client1.bareos.org-cert.pem
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/client1.bareos.org-cert.pem
 )
-set(tls_fd_key ${CMAKE_CURRENT_SOURCE_DIR}/tls/client1.bareos.org-key.pem)
+set(tls_fd_key
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/client1.bareos.org-key.pem
+)
 
 set(tls_sd_certificate
-    ${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-sd1.bareos.org-cert.pem
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-sd1.bareos.org-cert.pem
 )
-set(tls_sd_key ${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-sd1.bareos.org-key.pem)
+set(tls_sd_key
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-sd1.bareos.org-key.pem
+)
 
 set(tls_dir_certificate
-    ${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-dir.bareos.org-cert.pem
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-dir.bareos.org-cert.pem
 )
-set(tls_dir_key ${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-dir.bareos.org-key.pem)
+set(tls_dir_key
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/bareos-dir.bareos.org-key.pem
+)
 
 set(tls_con_certificate
-    ${CMAKE_CURRENT_SOURCE_DIR}/tls/console.bareos.org-cert.pem
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/console.bareos.org-cert.pem
 )
-set(tls_con_key ${CMAKE_CURRENT_SOURCE_DIR}/tls/console.bareos.org-key.pem)
+set(tls_con_key
+    ${wine_drive_prefix}${CMAKE_CURRENT_SOURCE_DIR}/tls/console.bareos.org-key.pem
+)
 
 option(SYSTEMTESTS_S3_USE_HTTPS "Use tls for S3 connections in systemtests"
        "yes"
