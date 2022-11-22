@@ -88,7 +88,25 @@ class Json(PythonBareosBase):
         #    "exitstatus": 0
         #    }
         # }
-        self.assertEqual(result["job"]["jobstatuslong"], expected_status)
+        self.assertEqual(
+            expected_status,
+            result["job"]["jobstatuslong"],
+            'Result is "{}", but expected "{}". Joblog:\n{}'.format(
+                result["job"]["jobstatuslong"],
+                expected_status,
+                self.get_joblog_as_str(director, jobId),
+            ),
+        )
+
+    def get_joblog_as_str(self, director, jobId):
+        result = director.call("list joblog jobid={}".format(jobId))
+        joblog = "".join(
+            [
+                "{} {}".format(i.get("time"), i.get("logtext"))
+                for i in result.get("joblog", [])
+            ]
+        )
+        return joblog
 
     def run_job(self, director, jobname=None, level=None, extra=None, wait=False):
         logger = logging.getLogger()
