@@ -2010,3 +2010,52 @@ def read_director_time(
     else:
         response.status_code = 500
         return result
+
+### Nodes ###
+@app.get("/node/{file_path:path}", status_code=200, tags=["node"])
+def get_node(
+        *,
+        response: Response,
+        current_user: User = Depends(get_current_user),
+        file_path: str
+):
+    return {"file_path": file_path}
+
+#@app.get("/node", status_code=200, tags=["node"])
+#def get_node(
+    #response: Response,
+    #current_user: User = Depends(get_current_user),
+    #path: str = Path(..., title="Console name to look for")
+#):
+    #"""
+    #Read status information from catalog about all clients or just one client by name.
+    #Built on console command _llist client_
+    #"""
+    ##if name:
+        ##listCommand = "llist client=%s" % name
+    ##else:
+        ##listCommand = "llist clients"
+    ##try:
+        ##responseDict = current_user.jsonDirector.call(listCommand)
+    ##except Exception as e:
+        ##response.status_code = 500
+        ##return {
+            ##"message": "Could not read client list from director %s. Message: '%s'"
+            ##% (CONFIG_DIRECTOR_NAME, e)
+        ##}
+    ##if "clients" in responseDict:
+        ##totalItems = len(responseDict["clients"])
+        ##return {"totalItems": totalItems, "clients": responseDict["clients"]}
+    ##else:
+        ##response.status_code = 404
+        ##return {"message": "No clients found."}
+    #return {
+        #"x1": {
+            #"x11": "dfdssfd",
+            #"x12": "dssfd",
+        #},
+        #"x2": {
+            #"x21": "2dfdssfd",
+            #"x22": "2dssfd",
+        #},
+    #}
