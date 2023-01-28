@@ -33,6 +33,7 @@ import os
 from packaging import version
 from passlib.context import CryptContext
 from pydantic import BaseModel
+import re
 from typing import Optional
 import yaml
 
@@ -194,12 +195,12 @@ def versionCheck(
     minVersion: Optional[str] = "16.1.1",
 ):
     myVersion = ""
-    if current_user.directorVersion > "":
+    if current_user.directorVersion:
         myVersion = current_user.directorVersion
     else:
         result = read_director_version(response=response, current_user=current_user)
         if "version" in result:
-            myVersion = result["version"]
+            myVersion = re.compile(r"~pre([0-9]+).*").sub(r".dev\1", result["version"])
             current_user.directorVersion = myVersion
         else:
             raise HTTPException(
@@ -321,7 +322,7 @@ def show_configuration_items(
     versionCheck(
         response=response,
         current_user=current_user,
-        minVersion="20.0.0~pre996.de46d0b15",
+        minVersion="20.0.0",
     )
     # Sometimes config type identificator differs from key returned by director, we need to map
     itemKey = itemType
@@ -539,7 +540,7 @@ def read_all_clients(
     """
     Read all jobdef resources. Built on console command _show clients_.
 
-    Needs at least Bareos Version >= 20.0.0
+    Needs Bareos Version >= 20.0.0
     """
     return show_configuration_items(
         response=response,
