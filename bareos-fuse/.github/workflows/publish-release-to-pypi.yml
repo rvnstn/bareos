@@ -1,0 +1,40 @@
+name: "[Release] bareos-fuse -> https://pypi.org/"
+
+on:
+  push:
+    tags:
+      - Release/*
+
+jobs:
+  build-and-publish:
+    name: "Build bareos-fuse and publish it to https://pypi.org/"
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - name: "Checkout source"
+      uses: actions/checkout@v2
+
+    - name: "Set up Python"
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+        
+    - name: "Build python package"
+      run: |
+        pip install --user wheel
+        python setup.py sdist bdist_wheel
+
+    - name: "Create artifact"
+      # creating an artifact is not required for publishing to pypi.
+      uses: actions/upload-artifact@v2
+      with:
+        path: dist/
+
+    - name: "Publish to pypi.org"
+      uses: pypa/gh-action-pypi-publish@v1.1.0
+      with:
+        #repository_url: https://test.pypi.org/legacy/
+        #repository_url: https://pypi.org/legacy/
+        #password: ${{ secrets.test_pypi_password }}
+        password: ${{ secrets.pypi_password }}
+        packages_dir: dist/

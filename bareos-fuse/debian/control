@@ -1,0 +1,15 @@
+Source: bareos-fuse
+Maintainer: Joerg Steffens <joerg.steffens@bareos.com>
+Section: python
+Priority: optional
+Build-Depends: dh-python, debhelper (>= 7.4.3), python-all (>= 2.6.6-3), python-setuptools (>= 0.6b3)
+Standards-Version: 3.9.1
+
+Package: bareos-fuse
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, fuse, python-bareos (>= 0.4), python-fuse
+# required for restoring
+Recommends: bareos-filedaemon (>=15.2.1)
+Description: Backup Archiving Recovery Open Sourced - FUSE
+ bareos-fuse (bareosfs) allows you to display the information of a Bareos Backup System in your filesystem.
+
