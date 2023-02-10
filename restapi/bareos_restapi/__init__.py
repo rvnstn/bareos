@@ -4,7 +4,7 @@
 #
 # BAREOS - Backup Archiving REcovery Open Sourced
 #
-# Copyright (C) 2020-2021 Bareos GmbH & Co. KG
+# Copyright (C) 2020-2023 Bareos GmbH & Co. KG
 #
 # This program is Free Software; you can redistribute it and/or
 # modify it under the terms of version three of the GNU Affero General Public
@@ -28,7 +28,10 @@ import configparser
 from datetime import datetime, timedelta
 from fastapi import Depends, FastAPI, HTTPException, status, Response, Path, Body, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
+import logging
+from logging.config import dictConfig
 import os
 from packaging import version
 from passlib.context import CryptContext
@@ -38,7 +41,39 @@ from typing import Optional
 import yaml
 
 import bareos.bsock
+from bareos.util import Path as BareosPath
+from bareos.fuse.root import Root
 from bareos_restapi.models import *
+
+
+class LogConfig(BaseModel):
+    """Logging configuration to be set for the server"""
+
+    LOGGER_NAME: str = "bareos"
+    LOG_FORMAT: str = "%(levelprefix)s | %(asctime)s | %(message)s"
+    LOG_LEVEL: str = "DEBUG"
+
+    # Logging config
+    version = 1
+    disable_existing_loggers = False
+    formatters = {
+        "default": {
+            "()": "uvicorn.logging.DefaultFormatter",
+            "fmt": LOG_FORMAT,
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    }
+    handlers = {
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+        },
+    }
+    loggers = {
+        LOGGER_NAME: {"handlers": ["default"], "level": LOG_LEVEL},
+    }
+
 
 # Read config from api.ini
 config = configparser.ConfigParser()
@@ -51,6 +86,15 @@ CONFIG_DIRECTOR_PORT = config.getint("Director", "Port")
 SECRET_KEY = config.get("JWT", "secret_key")
 ALGORITHM = config.get("JWT", "algorithm")
 ACCESS_TOKEN_EXPIRE_MINUTES = config.getint("JWT", "access_token_expire_minutes")
+
+
+app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:5173",
+    # "http://localhost:*",
+]
 
 userDirectors = {}
 users_db = {}
@@ -65,11 +109,22 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+dictConfig(LogConfig().dict())
+logger = logging.getLogger("bareos")
+
 app = FastAPI(
     title="Bareos REST API",
     description="Bareos REST API built on python-bareos. Experimental and subject to enhancements and changes. **Note** swagger does not support GET methods with bodies, however, the CURL statements displayed by swagger do work.",
     version="0.0.1",
     openapi_tags=tags_metadata,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -2011,51 +2066,75 @@ def read_director_time(
         response.status_code = 500
         return result
 
-### Nodes ###
-@app.get("/node/{file_path:path}", status_code=200, tags=["node"])
-def get_node(
-        *,
-        response: Response,
-        current_user: User = Depends(get_current_user),
-        file_path: str
-):
-    return {"file_path": file_path}
 
-#@app.get("/node", status_code=200, tags=["node"])
-#def get_node(
-    #response: Response,
-    #current_user: User = Depends(get_current_user),
-    #path: str = Path(..., title="Console name to look for")
-#):
-    #"""
-    #Read status information from catalog about all clients or just one client by name.
-    #Built on console command _llist client_
-    #"""
-    ##if name:
-        ##listCommand = "llist client=%s" % name
-    ##else:
-        ##listCommand = "llist clients"
-    ##try:
-        ##responseDict = current_user.jsonDirector.call(listCommand)
-    ##except Exception as e:
-        ##response.status_code = 500
-        ##return {
-            ##"message": "Could not read client list from director %s. Message: '%s'"
-            ##% (CONFIG_DIRECTOR_NAME, e)
-        ##}
-    ##if "clients" in responseDict:
-        ##totalItems = len(responseDict["clients"])
-        ##return {"totalItems": totalItems, "clients": responseDict["clients"]}
-    ##else:
-        ##response.status_code = 404
-        ##return {"message": "No clients found."}
-    #return {
-        #"x1": {
-            #"x11": "dfdssfd",
-            #"x12": "dssfd",
-        #},
-        #"x2": {
-            #"x21": "2dfdssfd",
-            #"x22": "2dssfd",
-        #},
-    #}
+### Nodes ###
+@app.get("/node/{path:path}", status_code=200, tags=["node"])
+def get_node(
+    *, response: Response, current_user: User = Depends(get_current_user), path: str
+):
+    # logger = logging.getLogger(__name__)
+    logger = logging.getLogger("bareos")
+
+    bareos = Root(current_user.jsonDirector, None, None, None)
+
+    result = {"path": path}
+
+    logger.info("test: {}".format(str(result)))
+
+    try:
+        children = bareos.readdir(BareosPath(path), None)
+        # pprint(children)
+        result["children"] = children
+    except AttributeError:
+        pass
+
+    try:
+        content = bareos.read(BareosPath(path), None, None)
+        # print(content.decode('utf-8'))
+        result["content"] = content.decode("utf-8") + "TEST1"
+    except AttributeError:
+        pass
+
+    logger.info("test: {}".format(str(result)))
+
+    return result
+
+
+# @app.get("/node", status_code=200, tags=["node"])
+# def get_node(
+# response: Response,
+# current_user: User = Depends(get_current_user),
+# path: str = Path(..., title="Console name to look for")
+# ):
+# """
+# Read status information from catalog about all clients or just one client by name.
+# Built on console command _llist client_
+# """
+##if name:
+##listCommand = "llist client=%s" % name
+##else:
+##listCommand = "llist clients"
+##try:
+##responseDict = current_user.jsonDirector.call(listCommand)
+##except Exception as e:
+##response.status_code = 500
+##return {
+##"message": "Could not read client list from director %s. Message: '%s'"
+##% (CONFIG_DIRECTOR_NAME, e)
+##}
+##if "clients" in responseDict:
+##totalItems = len(responseDict["clients"])
+##return {"totalItems": totalItems, "clients": responseDict["clients"]}
+##else:
+##response.status_code = 404
+##return {"message": "No clients found."}
+# return {
+# "x1": {
+# "x11": "dfdssfd",
+# "x12": "dssfd",
+# },
+# "x2": {
+# "x21": "2dfdssfd",
+# "x22": "2dssfd",
+# },
+# }
