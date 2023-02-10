@@ -2,9 +2,10 @@
 Bareos specific Fuse node.
 """
 
-from   bareos.fuse.node.backups import Backups
-from   bareos.fuse.node.directory import Directory
-from   bareos.fuse.node.jobslist import JobsList
+from bareos.fuse.node.backups import Backups
+from bareos.fuse.node.directory import Directory
+from bareos.fuse.node.jobslist import JobsList
+
 
 class Client(Directory):
     def __init__(self, root, name):

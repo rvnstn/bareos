@@ -1,18 +1,21 @@
 """
 """
 
-from   bareos.fuse.node.base import Base
+from bareos.fuse.node.base import Base
 import errno
-#import fuse
+
+# import fuse
 import logging
-from   pprint import pformat
+from pprint import pformat
 import stat
+
 
 class File(Base):
     """
     File node.
     """
-    def __init__(self, root, name, content = ""):
+
+    def __init__(self, root, name, content=""):
         super(File, self).__init__(root, name)
         if content is not None:
             self.content = bytes(bytearray(content, "utf-8"))

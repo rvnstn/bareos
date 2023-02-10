@@ -2,12 +2,14 @@
 NodeFactory
 """
 
-from   bareos.fuse.node import *
+from bareos.fuse.node import *
+
 
 class NodeFactory(object):
     """
     Creates instances of nodes, when required. directory.
     """
+
     def __init__(self, root):
         self.logger = logging.getLogger()
         self.root = root
@@ -21,7 +23,7 @@ class NodeFactory(object):
         if not id:
             self.logger.debug(classname + ": no id defined. Creating without storing")
             instance = classtype(self.root, *args, **kwargs)
-            #self.instances[classname][id] = instance
+            # self.instances[classname][id] = instance
         else:
             if id in self.instances[classname]:
                 self.logger.debug(classname + ": reusing " + id)

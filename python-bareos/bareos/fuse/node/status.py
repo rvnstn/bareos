@@ -2,8 +2,8 @@
 Bareos specific Fuse node.
 """
 
-from    bareos.fuse.node.file import File
-from    datetime import datetime, timedelta
+from bareos.fuse.node.file import File
+from datetime import datetime, timedelta
 
 
 class Status(File):
@@ -13,14 +13,13 @@ class Status(File):
         self.cache_stat_timeout = timedelta(seconds=60)
         self.objects = 0
 
-
     @classmethod
     def get_id(cls, name):
         return "unique"
 
     def do_update(self):
         self.objects = 0
-        self.content  = b"#\n"
+        self.content = b"#\n"
         self.content += b"# bareosfs cache\n"
         self.content += b"#\n"
         self.content += self.get_status(None, self.root, -1)
@@ -31,10 +30,10 @@ class Status(File):
     def get_status(self, name, node, indent):
         result = b""
         if name:
-            result  = b" " * (indent*2)
+            result = b" " * (indent * 2)
             result += self.as_bytes(name)
             result += b"\n"
             self.objects += 1
         for i in sorted(node.subnodes.keys()):
-            result += self.get_status(i, node.subnodes[i], indent+1)
+            result += self.get_status(i, node.subnodes[i], indent + 1)
         return result

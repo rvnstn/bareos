@@ -1,26 +1,29 @@
 """
 """
 
-from   bareos.fuse.node.base import Base
+from bareos.fuse.node.base import Base
 import errno
 import logging
-from   pprint import pformat
+from pprint import pformat
 import stat
+
 
 class Directory(Base):
     """
     Directory node.
     """
+
     def __init__(self, root, name):
         super(Directory, self).__init__(root, name)
-        self.defaultdirs = [ '.', '..' ]
+        self.defaultdirs = [".", ".."]
         self.stat.st_mode = stat.S_IFDIR | 0o755
         self.stat.st_nlink = len(self.defaultdirs)
         # arbitrary default value
         self.stat.st_size = 4096
 
     def readdir(self, path, offset):
-        self.logger.debug("%s(\"%s\")" % (str(self.name), str(path)))
+        self.logger.debug('%s("%s")' % (str(self.name), str(path)))
+        result = None
         # copy default dirs
         if path.len() == 0:
             self.update()

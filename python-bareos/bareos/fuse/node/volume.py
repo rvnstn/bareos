@@ -2,11 +2,12 @@
 Bareos specific Fuse node.
 """
 
-from   bareos.fuse.node.file import File
-from   bareos.fuse.node.directory import Directory
-from   bareos.fuse.node.jobslist import JobsList
-from   bareos.fuse.node.volumestatus import VolumeStatus
-from   pprint import pformat
+from bareos.fuse.node.file import File
+from bareos.fuse.node.directory import Directory
+from bareos.fuse.node.jobslist import JobsList
+from bareos.fuse.node.volumestatus import VolumeStatus
+from pprint import pformat
+
 
 class Volume(Directory):
     def __init__(self, root, name, volume):
@@ -15,7 +16,7 @@ class Volume(Directory):
 
     @classmethod
     def get_id(cls, name, volume):
-        return volume['volumename']
+        return volume["volumename"]
 
     def do_update_stat(self):
         self.subnode_count = 3

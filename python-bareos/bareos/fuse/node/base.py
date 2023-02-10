@@ -1,31 +1,37 @@
 """
 """
 
-from    datetime import datetime, timedelta
-from    dateutil import parser as DateParser
-import  errno
-#import  fuse
-import  grp
-import  logging
-import  os
-import  pwd
-import  stat
-import  sys
+from datetime import datetime, timedelta
+from dateutil import parser as DateParser
+import errno
+
+# import  fuse
+import grp
+import logging
+import os
+import pwd
+import stat
+import sys
+
+
+class StatMock(object):
+    def __init__(self):
+        self.st_mode = None
+
 
 class Base(object):
     """
     Base class for filesystem nodes.
     """
+
     def __init__(self, root, name):
         self.logger = logging.getLogger()
         self.root = root
         self.bsock = root.bsock
         self.id = None
         self.set_name(name)
-        #self.stat = fuse.Stat()
-        self.stat = {
-            'st_mode': None,
-        }
+        # self.stat = fuse.Stat()
+        self.stat = StatMock()
         self.xattr = {}
         # content have to be an instance of "bytes" (or None).
         self.content = None
@@ -39,18 +45,16 @@ class Base(object):
         self.cache_timeout = timedelta(seconds=60)
         self.cache_stat_timeout = timedelta(seconds=60)
 
-
     def as_str(self, data):
         if sys.version_info[0] < 3:
             # Python 2
             if isinstance(data, unicode):
-                data = data.encode('utf-8')
+                data = data.encode("utf-8")
         else:
             # Python 3
             if isinstance(data, bytes):
-                data = data.decode('utf-8')
+                data = data.decode("utf-8")
         return data
-
 
     def as_bytes(self, data):
         if data is None:
@@ -58,7 +62,6 @@ class Base(object):
         if not isinstance(data, bytes):
             return bytes(data, "utf-8")
         return data
-
 
     @classmethod
     def get_id(cls, *args, **kwargs):
@@ -77,7 +80,7 @@ class Base(object):
         Get name from init parameter.
         Normally name is statically set,
         but for some objects is it based on status data
-        and dependend on where the instance is locationed 
+        and dependend on where the instance is locationed
         in the directory tree (e.g. volumestatus).
         """
         return self.name
@@ -100,40 +103,45 @@ class Base(object):
 
     def set_stat(self, stat):
         try:
-            if stat['mode'] > 0:
-                self.stat.st_mode = stat['mode']
-            self.stat.st_size = stat['size']
-            self.stat.st_atime = stat['atime']
-            self.stat.st_ctime = stat['ctime']
-            self.stat.st_mtime = stat['mtime']
+            if stat["mode"] > 0:
+                self.stat.st_mode = stat["mode"]
+            self.stat.st_size = stat["size"]
+            self.stat.st_atime = stat["atime"]
+            self.stat.st_ctime = stat["ctime"]
+            self.stat.st_mtime = stat["mtime"]
         except KeyError as e:
             self.logger.warning(str(e))
             pass
         try:
-            uid = pwd.getpwnam(stat['user']).pw_uid
+            uid = pwd.getpwnam(stat["user"]).pw_uid
             self.stat.st_uid = uid
         except KeyError as e:
-            self.logger.info("user %s not known on this system, fall back to uid 0" % (stat['user']))
+            self.logger.info(
+                "user %s not known on this system, fall back to uid 0" % (stat["user"])
+            )
             pass
         try:
-            gid = grp.getgrnam(stat['group']).gr_gid
+            gid = grp.getgrnam(stat["group"]).gr_gid
             self.stat.st_gid = gid
         except KeyError as e:
-            self.logger.info("group %s not known on this system, fall back to gid 0" % (stat['group']))
+            self.logger.info(
+                "group %s not known on this system, fall back to gid 0"
+                % (stat["group"])
+            )
             pass
-        #"stat": {
-          #"atime": 1441134679,
-          #"ino": 3689524,
-          #"dev": 2051,
-          #"mode": 33256,
-          #"nlink": 1,
-          #"user": "joergs",
-          #"group": "joergs",
-          #"ctime": 1441134679,
-          #"rdev": 0,
-          #"size": 1613,
-          #"mtime": 1441134679
-        #},
+        # "stat": {
+        # "atime": 1441134679,
+        # "ino": 3689524,
+        # "dev": 2051,
+        # "mode": 33256,
+        # "nlink": 1,
+        # "user": "joergs",
+        # "group": "joergs",
+        # "ctime": 1441134679,
+        # "rdev": 0,
+        # "size": 1613,
+        # "mtime": 1441134679
+        # },
 
     def add_subnode(self, classtype, *args, **kwargs):
         instance = self.root.factory.get_instance(classtype, *args, **kwargs)
@@ -142,7 +150,7 @@ class Base(object):
             self.subnodes[name] = instance
         else:
             if name in self.subnodes_old:
-                del(self.subnodes_old[name])
+                del self.subnodes_old[name]
 
     def update_stat(self):
         # update status, content, ...
@@ -153,11 +161,16 @@ class Base(object):
             self.lastupdate_stat = now
         elif not self.static and (self.lastupdate_stat + self.cache_stat_timeout) < now:
             diff = now - self.lastupdate_stat
-            self.logger.debug("reason: non-static and timeout (%d seconds)" % (diff.seconds))
+            self.logger.debug(
+                "reason: non-static and timeout (%d seconds)" % (diff.seconds)
+            )
             self.do_update_stat()
             self.lastupdate_stat = datetime.now()
         else:
-            self.logger.debug("skipped (lastupdate: %s, static: %s)" % ( str(self.lastupdate_stat), str(self.static)))
+            self.logger.debug(
+                "skipped (lastupdate: %s, static: %s)"
+                % (str(self.lastupdate_stat), str(self.static))
+            )
 
     def do_update_stat(self):
         """
@@ -175,18 +188,23 @@ class Base(object):
             self.lastupdate = now
         elif not self.static and (self.lastupdate + self.cache_timeout) < now:
             diff = now - self.lastupdate
-            self.logger.debug("reason: non-static and timeout (%d seconds)" % (diff.seconds))
+            self.logger.debug(
+                "reason: non-static and timeout (%d seconds)" % (diff.seconds)
+            )
             # store current subnodes
             #  and delete all not updated subnodes after do_update()
             self.subnodes_old = self.subnodes.copy()
             self.do_update()
             for i in list(self.subnodes_old.keys()):
                 self.logger.debug("removing outdated node %s" % (i))
-                del(self.subnodes[i])
+                del self.subnodes[i]
             self.subnode_count = len(self.subnodes)
             self.lastupdate = datetime.now()
         else:
-            self.logger.debug("skipped (lastupdate: %s, static: %s)" % ( str(self.lastupdate), str(self.static)))
+            self.logger.debug(
+                "skipped (lastupdate: %s, static: %s)"
+                % (str(self.lastupdate), str(self.static))
+            )
 
     def do_update(self):
         """
@@ -196,12 +214,11 @@ class Base(object):
         # remove marker for nodes to be deleted after update
         self.subnodes_old = {}
 
-
     # Filesystem methods
     # ==================
 
     def getattr(self, path):
-        #self.logger.debug("%s(\"%s\")" % (str(self), str(path)))
+        # self.logger.debug("%s(\"%s\")" % (str(self), str(path)))
         result = -errno.ENOENT
         if path.len() == 0:
             self.update_stat()
@@ -214,14 +231,16 @@ class Base(object):
                 result = self.subnodes[topdir].getattr(path)
         return result
 
-
     def read(self, path, size, offset):
-        #self.logger.debug("%s(\"%s\", %d, %d)" % (str(self), str(path), size, offset))
+        # self.logger.debug("%s(\"%s\", %d, %d)" % (str(self), str(path), size, offset))
         result = -errno.ENOENT
         if path.len() == 0:
             self.update()
             if self.content != None:
-                result = self.content[offset:offset+size]
+                if size is None:
+                    result = self.content
+                else:
+                    result = self.content[offset : offset + size]
         else:
             if not (path.get(0) in self.subnodes):
                 self.update()
@@ -231,7 +250,7 @@ class Base(object):
         return result
 
     def readlink(self, path):
-        #self.logger.debug("%s(\"%s\", %d, %d)" % (str(self), str(path), size, offset))
+        # self.logger.debug("%s(\"%s\", %d, %d)" % (str(self), str(path), size, offset))
         result = -errno.ENOENT
         if path.len() == 0:
             pass
@@ -242,10 +261,10 @@ class Base(object):
         return result
 
     def listxattr(self, path):
-        '''
+        """
         list extended attributes
-        '''
-        #self.logger.debug("%s(\"%s\", %s)" % (str(self.get_name()), str(path), str(size)))
+        """
+        # self.logger.debug("%s(\"%s\", %s)" % (str(self.get_name()), str(path), str(size)))
         result = []
         if path.len() == 0:
             result = list(self.xattr.keys())
@@ -256,10 +275,10 @@ class Base(object):
         return result
 
     def getxattr(self, path, key):
-        '''
+        """
         get value of extended attribute
-        '''
-        #self.logger.debug("%s(\"%s\")" % (str(self), str(path)))
+        """
+        # self.logger.debug("%s(\"%s\")" % (str(self), str(path)))
         result = None
         if path.len() == 0:
             try:
@@ -273,9 +292,9 @@ class Base(object):
         return result
 
     def setxattr(self, path, key, value, flags):
-        '''
+        """
         set value of extended attribute
-        '''
+        """
         result = 0
         if path.len() == 0:
             self.xattr[key] = value
@@ -286,11 +305,11 @@ class Base(object):
         return result
 
     def rename(self, oldpath, newpath):
-        self.logger.debug("%s(\"%s %s\")" % (str(self), str(oldpath), str(newpath)))
+        self.logger.debug('%s("%s %s")' % (str(self), str(oldpath), str(newpath)))
         result = -errno.ENOENT
         if path.len() == 0:
-            #self.update()
-            #result = self.get_stat()
+            # self.update()
+            # result = self.get_stat()
             pass
         else:
             if path.get(0) in self.subnodes:
@@ -305,7 +324,7 @@ class Base(object):
         unixtimestamp = 0
         try:
             unixtimestamp = int(DateParser.parse(bareosdate).strftime("%s"))
-            #self.logger.debug( "unix timestamp: %d" % (unixtimestamp))
+            # self.logger.debug( "unix timestamp: %d" % (unixtimestamp))
         except ValueError:
             pass
         # could happen because of timezones

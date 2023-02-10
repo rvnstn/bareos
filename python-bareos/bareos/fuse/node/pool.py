@@ -2,10 +2,11 @@
 Bareos specific Fuse node.
 """
 
-from   bareos.fuse.node.directory import Directory
-from   bareos.fuse.node.file import File
-from   bareos.fuse.node.volumelist import VolumeList
-from   pprint import pformat
+from bareos.fuse.node.directory import Directory
+from bareos.fuse.node.file import File
+from bareos.fuse.node.volumelist import VolumeList
+from pprint import pformat
+
 
 class Pool(Directory):
     def __init__(self, root, name, pool):
