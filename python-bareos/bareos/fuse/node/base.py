@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from dateutil import parser as DateParser
 import errno
 
+from bareos.util import Path
+
 # import  fuse
 import grp
 import logging
@@ -25,7 +27,7 @@ class Base(object):
     """
 
     def __init__(self, root, name):
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(__name__)
         self.root = root
         self.bsock = root.bsock
         self.id = None
@@ -331,3 +333,21 @@ class Base(object):
         if unixtimestamp < 0:
             unixtimestamp = 0
         return unixtimestamp
+
+    # Node methods
+    # ============
+
+    def get_node(self, path : Path):
+        self.logger.debug('%s("%s")' % (str(self.name), str(path)))
+        result = None
+        if not path.is_directory():
+            return self
+        if path.len() == 0:
+            return self
+        else:
+            if not (path.get(0) in self.subnodes):
+                self.update()
+            if path.get(0) in self.subnodes:
+                topdir = path.shift()
+                result = self.subnodes[topdir].get_node(path)
+        return result

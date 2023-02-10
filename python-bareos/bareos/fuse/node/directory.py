@@ -15,7 +15,8 @@ class Directory(Base):
 
     def __init__(self, root, name):
         super(Directory, self).__init__(root, name)
-        self.defaultdirs = [".", ".."]
+        #self.defaultdirs = [".", ".."]
+        self.defaultdirs = []
         self.stat.st_mode = stat.S_IFDIR | 0o755
         self.stat.st_nlink = len(self.defaultdirs)
         # arbitrary default value
@@ -33,9 +34,11 @@ class Directory(Base):
                 self.update()
             if path.get(0) in self.subnodes:
                 topdir = path.shift()
-                result = self.subnodes[topdir].readdir(path, offset)
+                if callable(getattr(self.subnodes[topdir], "readdir", None)):
+                    result = self.subnodes[topdir].readdir(path, offset)
         return result
 
     def get_stat(self):
         self.stat.st_nlink = len(self.defaultdirs) + self.subnode_count
         return super(Directory, self).get_stat()
+

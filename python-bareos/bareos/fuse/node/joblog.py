@@ -33,5 +33,5 @@ class JobLog(File):
                 pass
             except UnicodeEncodeError as e:
                 self.logger.error("failed to convert logtext to string: %s" % (str(e)))
-                content += "BAREOFSFS SKIPPED: converting error\n"
+                content += "BAREOSFS SKIPPED: converting error\n"
         self.content = bytes(bytearray(content, "utf-8"))

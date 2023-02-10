@@ -6,6 +6,7 @@ import bareos.fuse.exceptions
 from bareos.fuse.nodefactory import NodeFactory
 from bareos.fuse.node.directory import Directory
 from bareos.fuse.node import *
+from bareos.util import Path
 
 
 class Root(Directory):
@@ -33,3 +34,31 @@ class Root(Directory):
         self.add_subnode(Pools, "pools")
         self.add_subnode(Clients, "clients")
         self.add_subnode(Status, ".bareosfs-status.txt")
+
+    # Node methods
+    # ============
+
+    # def get_children(self, path : str, offset = None):
+    #     relative_children = self.readdir(Path(path), offset)
+    #     if relative_children is None:
+    #         return {}
+    #     children = [ str(Path(f"{path}/{i}")) for i in relative_children ]
+    #     return children
+
+    def get_children(self, path : str, offset = None):
+        relative_child_paths = self.readdir(Path(path), offset)
+        if relative_child_paths is None:
+            return {}
+        result = {}
+        for i in relative_child_paths:
+            self.logger.debug(f"rel_path: {i}")
+            child_fullpath = Path(f"{path}/{i}")
+            self.logger.debug(f"full_path: {child_fullpath}")
+            node = self.get_node(child_fullpath)
+            if node:
+                result[str(child_fullpath)] = {
+                    'name': node.get_name(),
+                    #'id': node.id,
+                    #'path': child_path,
+                }
+        return result

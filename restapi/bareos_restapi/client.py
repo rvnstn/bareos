@@ -53,7 +53,7 @@ def auth(client, username, password):
     response = client.post("/token", data={"username": username, "password": password})
     # assert response.status_code == 200
     # assert response.json()['token_type'] == "bearer"
-    print(response.json())
+    #print(response.json())
     # assert 'access_token' in response.json()
     # client.headers = {"Authorization": "Bearer " + response.json()['access_token']}
     client.headers["Authorization"] = (
@@ -63,13 +63,12 @@ def auth(client, username, password):
 
 
 def walk(client, path):
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
     response = client.get(path)
     logger.debug(response.json())
     try:
-        for i in response.json()["children"]:
-            if i not in [".", ".."]:
-                walk(client, f"{path}/{i}")
+        for child_path, child_info in response.json()["children"].items():
+            walk(client, child_path)
     except KeyError:
         pass
 
@@ -81,13 +80,13 @@ if __name__ == "__main__":
     logging.basicConfig(
         format="%(levelname)s %(module)s.%(funcName)s: %(message)s", level=logging.INFO
     )
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
 
     args = getArguments()
-    print(args)
     if args.debug:
         logger.setLevel(logging.DEBUG)
 
     with httpx.Client(base_url=baseurl) as client:
         auth(client, username, password)
-        walk(client, "/node/")
+        client.base_url = f"{baseurl}node"
+        walk(client, "/")

@@ -184,6 +184,7 @@ def authenticate_user(username: str, password: str):
     user = UserObject(username, password)
     user.jsonDirector = jsonDirector
     user.username = username
+    user.bareos_nodes = Root(jsonDirector, None, None, None)
     users_db[username] = user
     return user
 
@@ -2075,27 +2076,27 @@ def get_node(
     # logger = logging.getLogger(__name__)
     logger = logging.getLogger("bareos")
 
-    bareos = Root(current_user.jsonDirector, None, None, None)
-
     result = {"path": path}
 
-    logger.info("test: {}".format(str(result)))
+    logger.info(f"get_node('{path}')")
 
     try:
-        children = bareos.readdir(BareosPath(path), None)
+        #children = bareos.get_children(BareosPath(path))
+        children = current_user.bareos_nodes.get_children("/" + path)
         # pprint(children)
         result["children"] = children
     except AttributeError:
-        pass
+        raise
 
     try:
-        content = bareos.read(BareosPath(path), None, None)
+        content = current_user.bareos_nodes.read(BareosPath(path), None, None)
         # print(content.decode('utf-8'))
         result["content"] = content.decode("utf-8") + "TEST1"
     except AttributeError:
         pass
 
-    logger.info("test: {}".format(str(result)))
+    #logger.info("test: {}".format(str(result)))
+    logger.info(f"get_node('{path}') = {result}")
 
     return result
 
