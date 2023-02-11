@@ -4,16 +4,15 @@
 from datetime import datetime, timedelta
 from dateutil import parser as DateParser
 import errno
-
-from bareos.util import Path
-
-# import  fuse
 import grp
 import logging
 import os
 import pwd
 import stat
 import sys
+
+import bareos.fuse.node
+from bareos.util import Path
 
 
 class StatMock(object):
@@ -337,17 +336,6 @@ class Base(object):
     # Node methods
     # ============
 
-    def get_node(self, path : Path):
-        self.logger.debug('%s("%s")' % (str(self.name), str(path)))
-        result = None
-        if not path.is_directory():
-            return self
-        if path.len() == 0:
-            return self
-        else:
-            if not (path.get(0) in self.subnodes):
-                self.update()
-            if path.get(0) in self.subnodes:
-                topdir = path.shift()
-                result = self.subnodes[topdir].get_node(path)
-        return result
+    def get_node(self, path: Path):
+        self.logger.debug('base %s.get_node("%s")' % (str(self.name), str(path)))
+        return self

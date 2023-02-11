@@ -25,10 +25,28 @@
 
 from fastapi.testclient import TestClient
 
-#from .main import app
+from bareos.httpclient import BareosHttpClient
 from bareos_restapi import app
 
+username = "admin-tls"
+password = "secret"
+
+
+def auth(client):
+    # curl --silent -X POST "${REST_API_URL}/token" -H  "accept: application/json" -H  "Content-Type: application/x-www-form-urlencoded" -d "username=admin-tls&password=secret" | grep access_token | cut -d
+    response = client.post("/token", data={"username": username, "password": password})
+    assert response.status_code == 200
+    assert response.json()["token_type"] == "bearer"
+    print(response.json())
+    assert "access_token" in response.json()
+    client.headers["Authorization"] = (
+        response.json()["token_type"] + " " + response.json()["access_token"]
+    )
+    return response.json()
+
+
 client = TestClient(app)
+auth(client)
 
 
 def DISABLED_test_read_item():
@@ -40,20 +58,25 @@ def DISABLED_test_read_item():
         "description": "There goes my hero",
     }
 
-def auth():
-    #curl --silent -X POST "${REST_API_URL}/token" -H  "accept: application/json" -H  "Content-Type: application/x-www-form-urlencoded" -d "username=admin-tls&password=secret" | grep access_token | cut -d 
-    response = client.post("/token", data={'username': 'admin-tls', 'password': 'secret'})
-    assert response.status_code == 200
-    assert response.json()['token_type'] == "bearer"
-    print(response.json())
-    assert 'access_token' in response.json()
-    return response.json()
-    
+
 def test_node():
-    auth_response = auth()
-    response = client.get("/node", headers={"Authorization": "Bearer " + auth_response['access_token']})
+    # auth_response = auth()
+    # response = client.get("/node", headers={"Authorization": "Bearer " + auth_response['access_token']})
+    response = client.get("/node")
     assert response.status_code == 200
-    assert response.json()['path'] ==  ''
-    assert 'children' in response.json()
+    assert response.json()["path"] == ""
+    assert "children" in response.json()
+
+
+def test_root():
+    # {'path': '', 'children': {'/jobs': {'name': None}, '/volumes': {'name': None}, '/pools': {'name': None}, '/clients': {'name': None}, '/.bareosfs-status.txt': {'name': None}}}
+    response = client.get("/node")
+    print(response)
+    children = response.json()["children"]
+    assert set(children.keys()) == set(
+        ["/jobs", "/volumes", "/pools", "/clients", "/.bareosfs-status.txt"]
+    )
+    # assert children['/jobs']["name"] == "jobs"
+
 
 # node//.bareosfs-status.txt

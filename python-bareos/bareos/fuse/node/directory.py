@@ -2,6 +2,7 @@
 """
 
 from bareos.fuse.node.base import Base
+from bareos.util import Path
 import errno
 import logging
 from pprint import pformat
@@ -15,7 +16,7 @@ class Directory(Base):
 
     def __init__(self, root, name):
         super(Directory, self).__init__(root, name)
-        #self.defaultdirs = [".", ".."]
+        # self.defaultdirs = [".", ".."]
         self.defaultdirs = []
         self.stat.st_mode = stat.S_IFDIR | 0o755
         self.stat.st_nlink = len(self.defaultdirs)
@@ -42,3 +43,22 @@ class Directory(Base):
         self.stat.st_nlink = len(self.defaultdirs) + self.subnode_count
         return super(Directory, self).get_stat()
 
+    # Node methods
+    # ============
+
+    def get_node(self, path: Path):
+        # TODO !!!
+        return self
+        self.logger.debug('%s.get_node("%s")' % (str(self.name), str(path)))
+        result = None
+        if path.len() == 0:
+            self.logger.debug("path.len == 0")
+            return self
+        else:
+            if not (path.get(0) in self.subnodes):
+                self.update()
+            if path.get(0) in self.subnodes:
+                topdir = path.shift()
+                result = self.subnodes[topdir].get_node(path)
+        self.logger.debug("result = " + str(result))
+        return result

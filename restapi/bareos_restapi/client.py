@@ -23,13 +23,9 @@
 #
 
 from __future__ import print_function
-import httpx
+from bareos.httpclient import BareosHttpClient
 import argparse
 import logging
-
-baseurl = "http://localhost:30588/"
-username = "admin-tls"
-password = "secret"
 
 
 def getArguments():
@@ -40,40 +36,11 @@ def getArguments():
     argparser.add_argument(
         "-d", "--debug", action="store_true", help="enable debugging output"
     )
-    argparser.add_argument("URL", help="URL of the Bareos API server", default=baseurl)
-    argparser.add_argument(
-        "username", help="Bareos user- or console-name", default=username
-    )
-    argparser.add_argument("password", help="Password", default=password)
+    argparser.add_argument("URL", help="URL of the Bareos API server")
+    argparser.add_argument("username", help="Bareos user- or console-name")
+    argparser.add_argument("password", help="Password")
     args = argparser.parse_args()
     return args
-
-
-def auth(client, username, password):
-    response = client.post("/token", data={"username": username, "password": password})
-    # assert response.status_code == 200
-    # assert response.json()['token_type'] == "bearer"
-    #print(response.json())
-    # assert 'access_token' in response.json()
-    # client.headers = {"Authorization": "Bearer " + response.json()['access_token']}
-    client.headers["Authorization"] = (
-        response.json()["token_type"] + " " + response.json()["access_token"]
-    )
-    # return response.json()
-
-
-def walk(client, path):
-    logger = logging.getLogger(__name__)
-    response = client.get(path)
-    logger.debug(response.json())
-    try:
-        for child_path, child_info in response.json()["children"].items():
-            walk(client, child_path)
-    except KeyError:
-        pass
-
-
-# node//.bareosfs-status.txt
 
 
 if __name__ == "__main__":
@@ -85,8 +52,9 @@ if __name__ == "__main__":
     args = getArguments()
     if args.debug:
         logger.setLevel(logging.DEBUG)
+        logging.getLogger("bareos.httpclient").setLevel(logging.DEBUG)
 
-    with httpx.Client(base_url=baseurl) as client:
-        auth(client, username, password)
-        client.base_url = f"{baseurl}node"
-        walk(client, "/")
+    with BareosHttpClient(base_url=args.URL) as client:
+        client.auth(args.username, args.password)
+        client.base_url = str(client.base_url) + "node"
+        client.walk("/")
