@@ -76,7 +76,7 @@ def test_root():
     assert set(children.keys()) == set(
         ["/jobs", "/volumes", "/pools", "/clients", "/.bareosfs-status.txt"]
     )
-    # assert children['/jobs']["name"] == "jobs"
+    assert children["/jobs"]["name"] == "jobs"
 
 
 # node//.bareosfs-status.txt

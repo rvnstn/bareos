@@ -2,8 +2,6 @@
 bareosfs root node (top level directory)
 """
 
-from copy import copy
-
 import bareos.fuse.exceptions
 from bareos.fuse.nodefactory import NodeFactory
 from bareos.fuse.node.directory import Directory
@@ -56,8 +54,7 @@ class Root(Directory):
             self.logger.debug(f"rel_path: {i}")
             child_fullpath = Path(f"{path}/{i}")
             self.logger.debug(f"full_path: {child_fullpath}")
-            tmp = copy(child_fullpath)
-            node = self.get_node(tmp)
+            node = self.get_node(child_fullpath)
             if node:
                 result[str(child_fullpath)] = {
                     "name": node.get_name(),

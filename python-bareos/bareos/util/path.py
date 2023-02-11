@@ -1,6 +1,6 @@
 #   BAREOS - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2015-2021 Bareos GmbH & Co. KG
+#   Copyright (C) 2015-2023 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -55,10 +55,10 @@ class Path(object):
         self.path = None
 
     def set_path(self, path):
+        self.path_orig = path
         if path == None:
             self.__set_defaults()
         elif isinstance(path, str):
-            self.path_orig = path
             components = self.path_orig.split("/")
             self.path = [i for i in components if i != ""]
             if path == "":
@@ -80,6 +80,12 @@ class Path(object):
             return self.path
         else:
             return self.path[index]
+
+    def __len__(self):
+        return self.path.__len__()
+
+    # def __getitem__(self, key):
+    #    return self.path.__getitem__(key)
 
     def shift(self):
         """
@@ -115,4 +121,4 @@ class Path(object):
         del self.path[index]
 
     def len(self):
-        return len(self.path)
+        return self.__len__()

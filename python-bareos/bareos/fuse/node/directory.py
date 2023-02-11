@@ -3,6 +3,7 @@
 
 from bareos.fuse.node.base import Base
 from bareos.util import Path
+from copy import deepcopy
 import errno
 import logging
 from pprint import pformat
@@ -47,8 +48,6 @@ class Directory(Base):
     # ============
 
     def get_node(self, path: Path):
-        # TODO !!!
-        return self
         self.logger.debug('%s.get_node("%s")' % (str(self.name), str(path)))
         result = None
         if path.len() == 0:
@@ -58,7 +57,8 @@ class Directory(Base):
             if not (path.get(0) in self.subnodes):
                 self.update()
             if path.get(0) in self.subnodes:
-                topdir = path.shift()
-                result = self.subnodes[topdir].get_node(path)
+                subpath = deepcopy(path)
+                topdir = subpath.shift()
+                result = self.subnodes[topdir].get_node(subpath)
         self.logger.debug("result = " + str(result))
         return result
