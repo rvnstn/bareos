@@ -750,7 +750,7 @@ def rerun_Job_by_jobid(
         return {"jobid": int(result["run"]["jobid"])}
     else:
         response.status_code = 500
-        return {"message": "Job '%s' triggered but no jobId returned" % jobCommand}
+        return {"message": "JobId '%d' triggered for rerun, but no jobId returned" % job_id}
 
 
 @app.post("/control/jobs/rerun", tags=["jobcontrol", "control", "jobs"])
@@ -999,7 +999,7 @@ def delete_job(
         response.status_code = 500
         return {
             "message": "Could not delete jobid %d on director %s. Message: '%s'"
-            % (job_id, current_identity.directorName, e)
+            % (job_id, current_user.directorName, e)
         }
     jobStatusResponse = read_job_status(
         job_id=job_id, response=response, current_user=current_user
