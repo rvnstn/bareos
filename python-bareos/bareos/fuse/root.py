@@ -58,6 +58,8 @@ class Root(Directory):
             if node:
                 result[str(child_fullpath)] = {
                     "name": node.get_name(),
+                    "static": node.static,
+                    "directory": isinstance(node, Directory)
                     #'id': node.id,
                     #'path': child_path,
                 }
