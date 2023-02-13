@@ -15,7 +15,7 @@ import stat
 class Job(Directory):
     def __init__(self, root, job):
         self.job = job
-        super(Job, self).__init__(root, self.get_name(job))
+        super(Job, self).__init__(root, self.create_name(job))
         try:
             if "client" not in job:
                 job["client"] = job["clientname"]

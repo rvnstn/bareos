@@ -30,6 +30,7 @@ class Base(object):
         self.root = root
         self.bsock = root.bsock
         self.id = None
+        self.name = None
         self.set_name(name)
         # self.stat = fuse.Stat()
         self.stat = StatMock()
@@ -89,12 +90,16 @@ class Base(object):
     # Interface
     # =========
 
-    def get_name(self, *args, **kwargs):
+    def create_name(self, *args, **kwargs):
         result = self.do_get_name(*args, **kwargs)
-        return self.as_str(result)
+        self.set_name(result)
+        return self.name
 
     def set_name(self, name):
         self.name = self.as_str(name)
+
+    def get_name(self):
+        return self.name
 
     def set_static(self, value=True):
         self.static = value
@@ -146,7 +151,7 @@ class Base(object):
 
     def add_subnode(self, classtype, *args, **kwargs):
         instance = self.root.factory.get_instance(classtype, *args, **kwargs)
-        name = instance.get_name(*args, **kwargs)
+        name = instance.create_name(*args, **kwargs)
         if name not in self.subnodes:
             self.subnodes[name] = instance
         else:

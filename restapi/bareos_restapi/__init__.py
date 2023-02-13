@@ -750,7 +750,9 @@ def rerun_Job_by_jobid(
         return {"jobid": int(result["run"]["jobid"])}
     else:
         response.status_code = 500
-        return {"message": "JobId '%d' triggered for rerun, but no jobId returned" % job_id}
+        return {
+            "message": "JobId '%d' triggered for rerun, but no jobId returned" % job_id
+        }
 
 
 @app.post("/control/jobs/rerun", tags=["jobcontrol", "control", "jobs"])
@@ -2081,7 +2083,7 @@ def get_node(
     logger.info(f"get_node('{path}')")
 
     try:
-        #children = bareos.get_children(BareosPath(path))
+        # children = bareos.get_children(BareosPath(path))
         children = current_user.bareos_nodes.get_children("/" + path)
         # pprint(children)
         result["children"] = children
@@ -2091,11 +2093,11 @@ def get_node(
     try:
         content = current_user.bareos_nodes.read(BareosPath(path), None, None)
         # print(content.decode('utf-8'))
-        result["content"] = content.decode("utf-8") + "TEST1"
+        result["content"] = content.decode("utf-8")
     except AttributeError:
         pass
 
-    #logger.info("test: {}".format(str(result)))
+    # logger.info("test: {}".format(str(result)))
     logger.info(f"get_node('{path}') = {result}")
 
     return result
