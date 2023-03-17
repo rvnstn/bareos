@@ -27,6 +27,10 @@ include(BareosSystemtestFunctions)
 
 set(USER $ENV{USER})
 
+option(SYSTEMTESTS_USE_WINE
+       "Configure the systemtests to use WINE to run Bareos" OFF
+)
+
 set(wine_drive_prefix "")
 if(${SYSTEMTESTS_USE_WINE})
   set(wine_drive_prefix "Z:")
@@ -98,9 +102,6 @@ message(STATUS "POSTGRES_BIN_PATH is ${POSTGRES_BIN_PATH}")
 
 find_program(PERL perl)
 
-option(SYSTEMTESTS_USE_WINE
-       "Configure the systemtests to use WINE to run Bareos" OFF
-)
 option(RUN_SYSTEMTESTS_ON_INSTALLED_FILES
        "Configure the system tests to run on installed files (from packages)"
 )
