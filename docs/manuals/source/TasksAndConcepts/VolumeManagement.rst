@@ -15,7 +15,7 @@ Key Concepts and Resource Records
 ---------------------------------
 
 .. index::
-    ingle: Volume; Management; Key Concepts and Resource Records
+   single: Volume; Management; Key Concepts and Resource Records
 
 Getting Bareos to write to disk rather than tape in the simplest case is rather easy. In the Storage daemon’s configuration file, you simply define an :config:option:`sd/device/ArchiveDevice`\  to be a directory. The default directory to store backups on disk is :file:`/var/lib/bareos/storage`:
 
@@ -62,7 +62,7 @@ Pool Options to Limit the Volume Usage
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. index::
-    single: Pool; Options to Limit the Volume Usage>`\
+   single: Pool; Options to Limit the Volume Usage
 
 Some of the options you have, all of which are specified in the Pool record, are:
 
