@@ -213,8 +213,8 @@ The |dir| configuration is as follows:
      Name = "Example FileSet"
      Include {
        Options {
-         compression=GZIP
-         signature=SHA1
+         Compression = LZ4
+         Signature = XXH128
        }
        File = /etc
      }

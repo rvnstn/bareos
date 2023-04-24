@@ -320,7 +320,7 @@ Please take note of the following items in the FileSet syntax:
 
       Include {
         Options {
-          compression=GZIP
+          Compression = LZ4
         }
         File = /
         File = /usr
@@ -342,7 +342,7 @@ Please take note of the following items in the FileSet syntax:
 
          Include {
            Options {
-             compression=GZIP
+             Compression = LZ4
            }
            @/home/files/my-files
          }
@@ -355,7 +355,7 @@ Please take note of the following items in the FileSet syntax:
 
          Include {
            Options {
-             signature = SHA1
+             Signature = XXH128
            }
            File = "</home/files/local-filelist"
          }
@@ -368,7 +368,7 @@ Please take note of the following items in the FileSet syntax:
 
          Include {
            Options {
-             Signature = SHA1
+             Signature = XXH128
            }
            File = "\\</home/xxx/filelist-on-client"
          }
@@ -391,7 +391,7 @@ Please take note of the following items in the FileSet syntax:
 
          Include {
             Options {
-              signature = SHA1
+              Signature = XXH128
             }
             File = "|sh -c 'df -l | grep \"^/dev/hd[ab]\" | grep -v \".*/tmp\" | awk \"{print \\$6}\"'"
          }
@@ -403,7 +403,7 @@ Please take note of the following items in the FileSet syntax:
 
          Include {
            Options {
-             signature=MD5
+             Signature = XXH128
            }
            File = "|my_partitions"
          }
@@ -427,7 +427,7 @@ Please take note of the following items in the FileSet syntax:
            Name = "All local partitions"
            Include {
              Options {
-               Signature=SHA1
+               Signature = XXH128
                OneFs=yes
              }
              File = "\\|bash -c \"df -klF ufs | tail +2 | awk '{print \$6}'\""
@@ -439,13 +439,15 @@ Please take note of the following items in the FileSet syntax:
       If you know what filesystems you have mounted on your system, e.g. for Linux only using ext2, ext3 or ext4, you can backup all local filesystems using something like:
 
       .. code-block:: bareosconfig
-         :caption: File Set to backup all extfs partions
+         :caption: File Set to backup all ext fs partitions
 
          Include {
             Options {
-              Signature = SHA1
-              OneFs=no
-              FsType=ext2
+              Signature = XXH128
+              OneFs = no
+              FsType = ext2
+              FsType = ext3
+              FsType = ext4
             }
             File = /
          }
@@ -463,8 +465,8 @@ Please take note of the following items in the FileSet syntax:
 
          Include {
            Options {
-             Signature=MD5
-             Sparse=yes
+             Signature = XXH128
+             Sparse = yes
            }
            File = /dev/hd6
          }
@@ -488,7 +490,7 @@ Please take note of the following items in the FileSet syntax:
         Name = "MyFileSet"
         Include {
           Options {
-            Signature = MD5
+            Signature = XXH128
           }
           File = /home
           Exclude Dir Containing = .nobackup
@@ -571,7 +573,7 @@ FileSet Exclude-Resources very similar to Include-Resources, except that they on
         Name = Exclusion_example
         Include {
           Options {
-            Signature = SHA1
+            Signature = XXH128
           }
           File = /
           File = /boot
@@ -1596,7 +1598,7 @@ The following is an example of a valid FileSet resource definition. Note, the fi
      }
    }
 
-In the above example, all the files contained in :file:`/etc/backup.list` will be compressed with GZIP compression, an SHA1 signature will be computed on the file’s contents (its data), and sparse file handling will apply.
+In the above example, all the files contained in :file:`/etc/backup.list` will be compressed with LZ4 compression, an XXH128 signature will be computed on the file’s contents (its data), and sparse file handling will apply.
 
 The two directories :file:`/root/myfile` and :file:`/usr/lib/another_file` will also be saved without any options, but all files in those directories with the extensions :file:`.o` and :file:`.exe` will be excluded.
 
@@ -1609,8 +1611,8 @@ Let’s say that you now want to exclude the directory :file:`/tmp`. The simples
      Name = "Full Set"
      Include {
        Options {
-         Compression=GZIP
-         signature=SHA1
+         Compression = LZ4
+         Signature = XXH128
          Sparse = yes
        }
        @/etc/backup.list

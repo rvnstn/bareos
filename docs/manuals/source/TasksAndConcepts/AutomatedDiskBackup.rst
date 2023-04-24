@@ -219,8 +219,8 @@ The Director’s configuration file is as follows:
      Name = "Full Set"
      Include = {
        Options {
-         signature=SHA1;
-         compression=GZIP9
+         Signature = XXH128
+         Compression = LZ4
        }
        File = /
        File = /usr
