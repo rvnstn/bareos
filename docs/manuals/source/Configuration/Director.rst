@@ -640,44 +640,37 @@ The directives within an Options resource may be one of the following:
    (e.g. hard disks). Otherwise, all modern tape drive do support hardware compression.
 
    Software compression can also be helpful to reduce the required network bandwidth,
-   as compression is done on the File Daemon. In most cases, :strong:`LZ4` is the best choice, because it is relatively fast.
-   If the compression rate of :strong:`LZ4` isn't good enough, you might consider :strong:`LZ4HC`.
+   as compression is done on the File Daemon.
+   In most cases, :strong:`LZ4` is the best choice, because it is relatively fast.
+   If the compression rate of :strong:`LZ4` isn't good enough,
+   you might consider :strong:`LZ4HC`.
    However, using Bareos software compression and device hardware compression together
    is not advised, as trying to compress precompressed data is a very CPU-intense task
    and probably end up in even larger data.
 
-   You can overwrite this option per Storage resource using the :config:option:`dir/storage/AllowCompression`\  = no option.
+   You can overwrite this option per Storage resource using the
+   :config:option:`dir/storage/AllowCompression = no` option.
 
    GZIP
         All files saved will be software compressed using the GNU ZIP
         compression format.
 
-        Specifying :strong:`GZIP` uses the default compression level 6 (i.e. :strong:`GZIP`
-        is identical to :strong:`GZIP6`). If you want a different compression
+        Specifying :strong:`GZIP` uses the default compression level 6
+        (i.e. :strong:`GZIP` is identical to :strong:`GZIP6`).
+        If you want a different compression
         level (1 through 9), you can specify it by appending the level number
-        with no intervening spaces to :strong:`GZIP`. Thus :strong:`compression=GZIP1`
-        would give minimum compression but the fastest algorithm, and :strong:`compression=GZIP9`
+        with no intervening spaces to :strong:`GZIP`.
+        Thus :strong:`compression=GZIP1` would give minimum compression
+        but the fastest algorithm, and :strong:`compression=GZIP9`
         would give the highest level of compression, but requires more computation.
         According to the GZIP documentation, compression levels greater than six
         generally give very little extra compression and are rather CPU intensive.
-
-   LZO
-        All files saved will be software compressed using the LZO
-        compression format. The compression is done on a file by file basis by
-        the File daemon. Everything else about GZIP is true for LZO.
-
-        LZO provides much faster compression and decompression speed but lower
-        compression ratio than GZIP. If your CPU is fast enough you should be able
-        to compress your data without making the backup duration longer.
-
-        Note that Bareos only use one compression level LZO1X-1 specified by LZO.
 
    LZFAST
         .. deprecated:: 19.2
 
         All files saved will be software compressed using the LZFAST
-        compression format. The compression is done on a file by file basis by
-        the File daemon. Everything else about GZIP is true for LZFAST.
+        compression format.
 
         LZFAST provides much faster compression and decompression speed but lower
         compression ratio than GZIP. If your CPU is fast enough you should be able
@@ -685,11 +678,19 @@ The directives within an Options resource may be one of the following:
 
         .. warning:: This is a nonstandard compression algorithm and support for compressing backups using it may be removed in a future version. Please consider using one of the other algorithms instead.
 
+   LZO
+        All files saved will be software compressed using the LZO
+        compression format.
+
+        LZO provides much faster compression and decompression speed but lower
+        compression ratio than GZIP. If your CPU is fast enough you should be able
+        to compress your data without making the backup duration longer.
+
+        Note that Bareos only use one compression level LZO1X-1 specified by LZO.
 
    LZ4
         All files saved will be software compressed using the LZ4
-        compression format. The compression is done on a file by file basis by
-        the File daemon. Everything else about GZIP is true for LZ4.
+        compression format.
 
         LZ4 provides much faster compression and decompression speed but lower
         compression ratio than GZIP. If your CPU is fast enough you should be able
@@ -701,12 +702,11 @@ The directives within an Options resource may be one of the following:
 
    LZ4HC
         All files saved will be software compressed using the LZ4HC
-        compression format. The compression is done on a file by file basis by
-        the File daemon. Everything else about GZIP is true for LZ4.
+        compression format.
 
         LZ4HC is the High Compression version of the LZ4 compression. It has
         a higher compression ratio than LZ4 and is more comparable to GZIP-6
-        in both compression rate and cpu usage.
+        in both compression rate and CPU usage.
 
         Both LZ4 and LZ4HC have the same decompression speed which is about twice
         the speed of the LZO compression. So for a restore both LZ4 and LZ4HC are
