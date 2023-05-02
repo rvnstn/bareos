@@ -638,8 +638,10 @@ The directives within an Options resource may be one of the following:
 
    Software compression gets important if you are writing to a device that does not support compression by itself
    (e.g. hard disks). Otherwise, all modern tape drive do support hardware compression.
+
    Software compression can also be helpful to reduce the required network bandwidth,
-   as compression is done on the File Daemon.
+   as compression is done on the File Daemon. In most cases, :strong:`LZ4` is the best choice, because it is relatively fast.
+   If the compression rate of :strong:`LZ4` isn't good enough, you might consider :strong:`LZ4HC`.
    However, using Bareos software compression and device hardware compression together
    is not advised, as trying to compress precompressed data is a very CPU-intense task
    and probably end up in even larger data.
@@ -650,15 +652,14 @@ The directives within an Options resource may be one of the following:
         All files saved will be software compressed using the GNU ZIP
         compression format.
 
-        Specifying :strong:`GZIP` uses the default compression level 6 (i.e.  :strong:`
-        GZIP` is identical to :strong:`GZIP6`).  If you want a different compression
+        Specifying :strong:`GZIP` uses the default compression level 6 (i.e. :strong:`GZIP`
+        is identical to :strong:`GZIP6`). If you want a different compression
         level (1 through 9), you can specify it by appending the level number
-        with no intervening spaces to :strong:`GZIP`.  Thus :strong:`compression=GZIP1`
-        would give minimum compression but the fastest algorithm, and :strong:`
-        compression=GZIP9` would give the highest level of compression, but
-        requires more computation.  According to the GZIP documentation,
-        compression levels greater than six generally give very little extra
-        compression and are rather CPU intensive.
+        with no intervening spaces to :strong:`GZIP`. Thus :strong:`compression=GZIP1`
+        would give minimum compression but the fastest algorithm, and :strong:`compression=GZIP9`
+        would give the highest level of compression, but requires more computation.
+        According to the GZIP documentation, compression levels greater than six
+        generally give very little extra compression and are rather CPU intensive.
 
    LZO
         All files saved will be software compressed using the LZO
